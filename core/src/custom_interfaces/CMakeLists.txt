@@ -7,9 +7,15 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+# Add msg and srv files
+file(GLOB msg_sources RELATIVE ${PROJECT_SOURCE_DIR} msg/*.msg)
+file(GLOB srv_sources RELATIVE ${PROJECT_SOURCE_DIR} srv/*.srv)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -22,5 +28,14 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+# generate Ros interfaces
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_sources}
+  ${srv_sources}
+  DEPENDENCIES geometry_msgs std_msgs
+)
+
+ament_export_dependencies(rosidl_default_runtime)
 
 ament_package()
