@@ -12,7 +12,7 @@ using namespace std::chrono_literals;
 using namespace rclcpp;
 
 Thrust_Interface::Thrust_Interface(std::vector<int> thrusters, char* pico_path, int min_pwm, int max_pwm) : 
-    Node("thrust_interface"), thrusters(thrusters), min_pwm(min_pwm), max_pwm(max_pwm) {
+    Node("thrust_interface"), thrusters(thrusters), min_pwm(min_pwm), max_pwm(max_pwm), no_heartbeat(true) {
         pwm_subscription = this->create_subscription<custom_interfaces::msg::Pwms>("pwm_cmd", 10, 
             std::bind(&Thrust_Interface::pwm_received_callback, this, std::placeholders::_1));
         heartbeat_subscription = this->create_subscription<std_msgs::msg::Bool>("mux_heartbeat", 10, 
@@ -27,6 +27,9 @@ Thrust_Interface::Thrust_Interface(std::vector<int> thrusters, char* pico_path, 
     }
     
 void Thrust_Interface::pwm_received_callback(custom_interfaces::msg::Pwms::UniquePtr pwms_msg) {
+    if (no_heartbeat) {
+        return;
+    }
     std::array<int, 8> pwms = pwms_msg->pwms;
     for (int i = 0; i < 8; i++) {
         if (pwms[i] < min_pwm) {
@@ -48,9 +51,13 @@ void Thrust_Interface::heartbeat_check_callback() {
     auto current_time = std::chrono::steady_clock::now();
     if (current_time - most_recent_heartbeat > 1s) {
         RCLCPP_INFO(this->get_logger(), "Didn't get heartbeat from mux. Sending stop command.");
+        no_heartbeat = true;
         for (int i = 0; i < 8; i++) {
             send_to_pico(thrusters[i], 1500);
         }        
+    }
+    else {
+        no_heartbeat = false;
     }
 }
 

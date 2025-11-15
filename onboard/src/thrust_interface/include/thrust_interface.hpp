@@ -27,6 +27,7 @@ class Thrust_Interface : public Node {
     int min_pwm;
     int max_pwm;
     std::chrono::time_point<std::chrono::steady_clock> most_recent_heartbeat;
+    bool no_heartbeat;
 };
 
 #endif // THRUST_INTERFACE_HPP
