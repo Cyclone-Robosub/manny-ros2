@@ -15,9 +15,10 @@ class SoftMux : public rclcpp::Node {
     private:
         void pwm_cmd_publish(custom_interfaces::msg::Pwms::UniquePtr pwm);
         bool is_matlab_mode;
-        rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr control_mode_service;
+        rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr control_mode;
         rclcpp::Subscription<custom_interfaces::msg::Pwms>::SharedPtr pwm_ctrl_subscriber;
         rclcpp::Subscription<custom_interfaces::msg::Pwms>::SharedPtr pwm_cli_subscriber;
-        rclcpp::Publisher<custom_interfaces::msg::Pwms>::SharedPtr pwm_cmd_publisher;   
+        rclcpp::Publisher<custom_interfaces::msg::Pwms>::SharedPtr pwm_cmd_publisher; 
+        rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr current_control_mode;
 };
 #endif
