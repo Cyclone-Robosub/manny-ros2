@@ -64,7 +64,6 @@ void Thrust_Interface::heartbeat_check_callback() {
 void Thrust_Interface::send_to_pico(int thruster, int pwm) {
     std::string serial_message = "Set " + std::to_string(thruster) + " PWM " + std::to_string(pwm) + "\n";
     int length = serial_message.size();
-    RCLCPP_INFO(this->get_logger(), "Sending cmd: %s", serial_message.c_str());
     write(pico_fd, serial_message.c_str(), length);
 }
 
